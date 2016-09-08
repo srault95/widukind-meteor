@@ -1,0 +1,941 @@
+<template name="site_left">
+  <div class="row">
+	  <div class="col-md-12 nopadding-left">
+
+		  <div class="panel panel-default">
+		    <div class="panel-heading nopadding">
+
+				  <ul id="sidebarnav" class="nav nav-pills nav-justified" role="tablist">
+
+								<!-- form multi select -->
+								<li role="sidebar" class="active">
+									<a href="#tab-form" data-toggle="tab">Explorer
+									</a>
+							  	</li>
+
+							 	<!-- datatree -->
+							 	<li role="sidebar">
+							  		<a href="#tab-tree" title="Original datatree from Provider" data-toggle="tab">Tree
+							  		</a>
+							  	</li>
+
+							  {{!--
+                				TODO: tags
+							 	<li role="sidebar">
+							  		<a href="#tab-tags" title="Filter by tags" data-toggle="tab">Tags
+							  		</a>
+							  </li>
+							  --}}
+
+							</ul>
+						</div><!-- panel-heading -->
+
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane fade in active" id="tab-form">
+                				{{> providers}}
+							</div><!-- tabpanel tab-form -->
+
+							<div role="tabpanel" class="tab-pane fade" id="tab-tree">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="panel panel-default noborder">
+										    <div id="tree_wrapper" class="panel-body">
+										    	{{!--
+												{{> field_provider}}
+												--}}
+
+										    	<div class="input-group">
+												    <input id="tree_search" name="tree_search" type="text" class="form-control input-sm" placeholder="Search category...">
+
+													<span class="input-group-btn">
+												        <button id="tree_btn_search" class="btn btn-default btn-sm" type="button">
+												            <span class="fa fa-search"></span>
+												        </button>
+												        <button id="tree_btn_clear" class="btn btn-default btn-sm" type="button">
+												            <span class="fa fa-eraser"></span>
+												        </button>
+											        </span>
+										        </div>
+
+										        <p></p>
+										        <div id="tree-tree"></div>
+										    </div>
+										</div>
+									</div>
+								</div>
+							</div><!-- tabpanel tab-tree -->
+
+							{{!--
+              TODO: tags
+							<div role="tabpanel" class="tab-pane fade" id="tab-tags">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="panel panel-default noborder">
+										    <div class="panel-body">
+										    	<div id="tags-cloud"></div>
+										    </div>
+										</div>
+									</div>
+								</div>
+							</div><!-- tabpanel tab-tags -->
+							--}}
+						</div><!-- tab-content -->
+			</div><!-- panel -->
+
+	 </div><!-- col-md-12 -->
+  </div><!-- row -->
+</template>
+
+<template name="explorer">
+
+    <div class="col-md-12">
+
+    <div id="site-left" class="col-md-3">
+      {{> site_left }}
+    </div>
+
+    <div id="site_content" class="col-md-9">
+
+			<div class="row">
+    	  <div class="col-md-12 nopadding">
+          <div class="panel panel-default">
+
+              <div class="panel-heading nopadding">
+				        <ul id="infosnavbar" class="nav nav-pills" role="tablist">
+
+  								<!-- toogle left sidebar -->
+  								<li role="presentation">
+  									<a id="sidetoogle" class="success" href="javascript:void(0)" aria-controls="not" role="tab">
+  										<i class="fa fa-bars fa-fw" aria-hidden="true" title="Sidebar toogle"></i>
+  									</a>
+  							  </li>
+
+							  	<!-- infos / count -->
+								<li role="presentation" class="active">
+									<a href="#tab-infos" aria-controls="tab-infos" role="tab" data-toggle="tab">
+										<i class="fa fa-info-circle fa-fw"></i> Info
+									</a>
+							  	</li>
+
+								<li role="presentation" class="btn-group">
+									<a class="" data-toggle="dropdown" href="javascript:void(0)"><i class="fa fa-download fa-fw"></i> API Link</a>
+								    <ul class="dropdown-menu">
+								    	<li><a id="down-json" href="javascript:void(0)">JSON</a></li>
+								    	<li><a id="down-sdmx" href="javascript:void(0)">SDMX</a></li>
+								    	{{!--
+                      					<li><a id="down-html" href="javascript:void(0)">HTML</a></li>
+                      					--}}
+								   	</ul>
+								</li>
+
+								<li role="presentation" class="{{#if seriesCartDisable}}disabled{{/if}}">
+									<a id="viewCart" class="success" href="javascript:void(0)" aria-controls="not" role="tab">
+										<i class="fa fa-shopping-cart fa-fw" aria-hidden="true" title="View cart"></i>
+										 Cart <span id="cart_count" class="badge">{{seriesCartCount}}</span>
+									</a>
+							  	</li>
+
+								<li role="presentation" class="{{#if seriesSelectionDisable}}disabled{{/if}}">
+									<a id="export-csv" class="success" href="javascript:void(0)" aria-controls="not" role="tab">
+										<i class="fa fa-excel fa-fw" aria-hidden="true" title="Export CSV"></i>
+										 Export CSV <span class="badge">{{seriesSelectionCount}}</span>
+									</a>
+							  	</li>
+
+							 	{{!--
+							 	<li role="presentation">
+							  		<a href="#tab-settings" aria-controls="tab-settings" role="tab" data-toggle="tab">
+							  			<i class="fa fa-cog fa-fw"></i> Settings
+							  		</a>
+							  	</li>
+							  	--}}
+
+  							</ul><!-- infosnavbar -->
+  						</div><!-- panel-heading -->
+
+              			<!-- tabpanel tab-infos -->
+  						<div class="tab-content">
+
+  							<div role="tabpanel" class="tab-pane fade in active" id="tab-infos">
+  					    	<table id="tab-infos" class="table nomargin-bottom table-hover table-condensed table-striped">
+					    			<tbody>
+  					    				<tr>
+  					    					<td class="col-md-1">Count</td>
+  					    					<td class="col-md-2">Provider</td>
+  					    					<td class="col-md-3">Dataset</td>
+  					    					{{#if currentSearch}}
+  					    						<td class="col-md-2">Search</td>
+  					    					{{/if}}
+  				    					</tr>
+  					    				<tr>
+  					    					<td>
+  					    						<span id="total_series" class="human-number">{{ countSeries }}</span> / <span class="human-number">{{ countSeriesFull }}</span>
+  					    					</td>
+  					    					<td>
+  					    						<small><span id="selectedProvider">{{selectProvider}}</span></small>
+  					    					</td>
+  					    					<td>
+  					    						<small><span id="selectedDataset">{{selectDataset}}</span></small>
+  					    					</td>
+  					    					{{#if currentSearch}}
+  					    					<td>
+  					    						<small><span id="currentSearch">{{currentSearch}}</span></small>
+  					    					</td>
+  					    					{{/if}}
+  					    				</tr>
+					    			</tbody>
+					    		</table>
+							  </div><!-- tabpanel tab-infos END -->
+
+							{{!--
+							<!-- tabpanel tab-settings -->
+							<div role="tabpanel" class="tab-pane fade" id="tab-settings">
+								<div class="panel panel-default noborder">
+							    	<div class="panel-body">
+										<form class="form-horizontal" id="form-settings">
+											<table class="table">
+												<tbody>
+													<tr>
+														<td class="col-md-1">Limit Results</td>
+														<td class="col-md-4">
+														  	{{> series_limit }}
+															<span class="help-text">Select a value for limit results.</span>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+
+										</form>
+									</div>
+								</div>
+							</div><!-- tabpanel tab-settings END -->
+							--}}
+
+            </div><!-- tab-content END -->
+          </div><!-- panel END -->
+        </div><!-- col -->
+      </div><!-- row -->
+
+	  <div class="row">
+	    <div class="col-md-12 nopadding">
+	    	{{!--
+		    {{#unless is_modal}}
+		    {{#if currentSeriesSlug}}
+		      	<div class="panel panel-default">
+				    <div class="panel-body">
+			      		{{> series_unit}}
+					</div>
+	        	</div>
+		    {{/if}}
+		    {{/unless}}
+		    --}}
+          	{{> series }}
+	    </div>
+	  </div><!-- row -->
+
+    </div><!-- #site-content -->
+  </div>
+
+</template>
+
+<template name="series_limit">
+	<form class="form-inline">
+  		<div class="form-group">
+    		<label class="sr-only" for="limit">Limit</label>
+		    <select id="series-limit" class="form-control">
+		    	{{#each options}}
+		    		<option value="{{value}}" {{attrs}}>{{label}}</option>
+		    	{{/each}}
+		    </select>
+		</div>
+	</form>
+</template>
+
+<template name="series_actions">
+	<form class="form-inline">
+  		<div class="form-group">
+    		<label class="sr-only" for="action">Actions</label>
+		    <select id="series-action" class="form-control" placeholder="Actions on selected">
+		    	<option value="">Actions</option>
+		    	{{#each options}}
+		    		<option value="{{value}}">{{label}}</option>
+		    	{{/each}}
+		    </select>
+		</div>
+	</form>
+</template>
+
+<template name="series_sort">
+	<form class="form-inline">
+  		<div class="form-group">
+    		<label class="sr-only" for="sort">Limit</label>
+		    <select id="series-sort" class="form-control">
+		    	{{#each options}}
+		    		<option value="{{value}}" {{attrs}}>{{label}}</option>
+		    	{{/each}}
+		    </select>
+		</div>
+	</form>
+</template>
+
+<template name="providers">
+    <div class="panel panel-default noborder">
+        <div class="panel-body">
+          <form id="providerForm" class="col-md-10 nopadding">
+          	{{> field_provider}}
+
+          	{{> field_search}}
+
+          	{{> field_dataset}}
+
+          	{{> field_dimensions}}
+          </form>
+        </div>
+    </div>
+</template>
+
+<template name="field_provider">
+	{{#if Template.subscriptionsReady}}
+		<div class="form-group">
+		  <label class="control-label" for="provider">Provider:</label>
+		  <select name="provider" class="form-control field-select2">
+		    {{#each provider_options}}
+		      <option value="{{value}}" {{attrs}}>{{label}}</option>
+		    {{/each}}
+		  </select>
+		</div>
+	{{/if}}
+</template>
+
+<template name="field_dataset">
+	{{#if ready}}
+	    <div class="form-group">
+	      <label class="control-label" for="dataset">Dataset:</label>
+	      <select name="dataset" class="form-control field-select2">
+	        {{#each dataset_options}}
+	          <option value="{{value}}" {{attrs}}>{{label}}</option>
+	        {{/each}}
+	      </select>
+	    </div>
+	{{/if}}
+</template>
+
+<template name="field_dimensions">
+	{{#if Template.subscriptionsReady}}
+	    {{#each dimensions}}
+	      {{> dimension_filter_select}}
+	    {{/each}}
+	{{/if}}
+</template>
+
+<template name="dimension_filter_select">
+    <div class="form-group">
+      <label class="control-label" for="{{fieldName}}">{{fieldLabel}}:</label>
+      <select name="{{fieldName}}" class="form-control field-select2" multiple="multiple">
+        {{#each options}}
+          <option value="{{value}}">{{label}}</option>
+        {{/each}}
+      </select>
+    </div>
+</template>
+
+<template name="series">
+  {{#if ready}}
+  	<div class="panel panel-default">
+  		<div class="panel-heading">
+			<div class="row">
+  				<div class="col-xs-2">
+		  			<div class="btn-group btn-group" role="group">
+						<button id="display-grid" title="Show Grid" type="button" class="btn btn-default {{#unless is_array}}active{{/unless}}" href="javascript:void(0)"><i class="fa fa-th fa-lg"></i></button>
+						<button id="display-list" title="Show List" type="button" class="btn btn-default {{#if is_array}}active{{/if}}" href="javascript:void(0)"><i class="fa fa-list fa-lg"></i></button>
+					</div>
+				</div>
+  				<div class="col-xs-2">
+					{{> series_limit }}
+				</div>
+				{{#unless is_array}}
+  				<div class="col-xs-3">
+					{{> series_sort }}
+				</div>
+  				<div class="col-xs-2">
+					{{> series_actions }}
+				</div>
+  				<div class="col-xs-2">
+					<form class="form-inline">
+				  		<div class="form-group">
+						    <input type="checkbox" id="modal_enable" checked="on">
+						</div>
+					</form>
+				</div>
+				{{/unless}}
+			</div>
+		</div>
+	  	{{#if is_array}}
+	  		{{> reactiveTable collection=series_list settings=settings}}
+	  	{{else}}
+	  		<div class="list-group">
+		  		{{#each series_list}}
+		  			{{> series_line}}
+		  		{{/each}}
+	  		</div>
+	  	{{/if}}
+  	</div>
+  {{else}}
+    {{> spinner}}
+  {{/if}}
+</template>
+
+<template name="series_line">
+	<div class="list-group-item">
+	    <div class="row">
+	      <div class="col-sm-2">
+	        <p class="list-group-item-heading">{{> series_buttons}}</p>
+	        <p class="list-group-item-text">latest: {{last_update_ds}}</p>
+	        {{!--
+	        <p class="list-group-item-text">{{frequency_name frequency}}, since {{moment start_ts 'Y'}}</p>
+	        --}}
+	        <p class="list-group-item-text">{{frequency_name frequency}}, since {{first_period values}}</p>
+	        <p class="list-group-item-text">version: {{version}}</p>
+	      </div>
+	      <div class="col-sm-9">
+	        <h4 class="list-group-item-heading">{{key}} - <small>{{name}}</small></h4>
+	        <h5 class="list-group-item-text">{{provider_name}} - {{dataset_code}} - {{dataset.name}}</h5>
+	        <a href="{{pathFor 'series.slug' slug=slug}}" class="list-group-item-text">Permalink: {{pathFor 'series.slug' slug=slug}}</a>
+	      </div>
+	      <div class="col-sm-1">
+	        <div class="list-group-item-text">
+	        	<div class="center-block">
+	        		<span class="spark" values="{{sparkline_datas}}">{{sparkline_datas}}</span>
+	        	</div>
+	        </div>
+	      </div>
+	    </div>
+    </div>
+</template>
+
+
+<template name="series_buttons">
+  <div class="btn-group btn-group-xs" role="group">
+    {{button_select}}
+    <a title="View series" data-title="View series" type="button" class="btn btn-default series-show" href="javascript:void(0)" data-series-slug="{{slug}}"><i class="fa fa-eye"></i></a>
+    <a title="Export series to CSV" type="button" class="btn btn-default series-export-csv" href="javascript:void(0)" data-series-slug="{{slug}}"><i class="fa fa-table"></i></a>
+    <button title="Show Graphic" type="button" class="btn btn-default series-show-graph" href="javascript:void(0)" data-series-slug="{{slug}}"><i class="fa fa-area-chart"></i></button>
+    {{button_cart}}
+  </div>
+</template>
+
+
+<template name="dataset_unit">
+  {{#if Template.subscriptionsReady}}
+    {{#with dataset}}
+    <h4>{{dataset_code}} <small>{{name}}</small></h4>
+    {{/with}}
+  {{else}}
+    {{> spinner}}
+  {{/if}}
+</template>
+
+<template name="series_unit_modal">
+    <div class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+				{{!--
+                <div class="modal-header">
+                    <h4 class="modal-title">Series</h4>
+                </div>
+                --}}
+
+                <div class="modal-body">
+                    {{> series_unit}}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- modal -->
+</template>
+
+<template name="series_unit">
+
+    <div class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-body">
+
+	{{#if ready}}
+
+	<div class="panel panel-default nopadding-left">
+    	<div class="panel-heading">
+    		<h5 class="nomargin">{{ provider.name }} - {{ dataset.dataset_code }} - {{ series.key }} - <small>{{ series.name }}</small></h5>
+    	</div>
+   	</div>
+
+	<div class="panel panel-default nomargin-bottom">
+    	<div class="panel-heading nopadding">
+
+			<ul class="nav nav-pills" role="tablist">
+
+				<li role="series" class="active">
+					<a href="#tab-modal-identity" aria-controls="tab-modal-identity" data-toggle="tab">
+						<i class="fa fa-user fa-fw"></i> Identity
+					</a>
+			  	</li>
+
+				<li role="series">
+					<a href="#tab-modal-val" aria-controls="tab-modal-val" data-toggle="tab">
+						<i class="fa fa-database fa-fw"></i> Data
+					</a>
+			  	</li>
+
+				<li role="series">
+					<a href="#tab-modal-rev" aria-controls="tab-modal-rev" data-toggle="tab">
+						<i class="fa fa-clock-o fa-fw"></i> Revisions
+					</a>
+			  	</li>
+
+				<li role="series">
+					<a data-series-plot-url="{{url_series_plot}}" href="#tab-modal-graph" aria-controls="tab-modal-graph" data-toggle="tab">
+						<i class="fa fa-area-chart"></i> Graph
+					</a>
+			  	</li>
+
+				<li role="series">
+					<a href="#tab-modal-dim" aria-controls="tab-modal-dim" data-toggle="tab">
+						<i class="fa fa-wpforms fa-fw"></i> Dimensions
+					</a>
+			  	</li>
+
+                <li role="series">
+                    <a href="#tab-modal-dataset" aria-controls="tab-modal-dataset" data-toggle="tab">
+                        <i class="fa fa-tag fa-fw"></i> Dataset
+                    </a>
+                </li>
+
+                <li role="series">
+                    <a href="#tab-modal-api" aria-controls="tab-modal-api" data-toggle="tab">
+                        <i class="fa fa-download fa-fw"></i> API Links
+                    </a>
+                </li>
+
+				<li role="series">
+					<a href="#tab-modal-tags" aria-controls="tab-modal-tags" data-toggle="tab">
+						<i class="fa fa-tag fa-fw"></i> Tags
+					</a>
+			  	</li>
+
+                <li role="series">
+                    <a href="#tab-modal-debug" aria-controls="tab-modal-debug" data-toggle="tab">
+                        <i class="fa fa-code fa-fw"></i> Debug
+                    </a>
+                </li>
+
+			</ul><!-- nav-pills -->
+		</div><!-- panel-heading -->
+
+		<div class="tab-content">
+
+			<div role="tabpanel" class="tab-pane fade in active" id="tab-modal-identity">
+
+			    <table id="seriesIdentity" class="table table-striped table-condensed table-bordered">
+			    	<tbody>
+                        <tr>
+                            <td class="col-md-2">Release Date</td>
+                            <td class="col-md-10">
+                                {{ moment series.last_update_ds 'LLL' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2">Current Version</td>
+                            <td class="col-md-10">
+                                {{ series.version }} ({{#if is_latest}}latest{{else}}old{{/if}})
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2">Latest Link</td>
+                            <td class="col-md-10">
+                                {{#if is_modal }}
+                                	<a data-title="View series" class="modal_show" href="javascript:void(0)" data-url="{{! url_series_latest }}?modal=1">Link</a>
+                                {{else }}
+                                	<a href="{{ url_series_latest }}">Link</a>
+                                {{/if}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-2">Permalink</td>
+                            <td class="col-md-10">
+                            	<a class="close-modal" href="{{pathFor 'series.slug.version' slug=series.slug version=series.version}}">{{pathFor 'series.slug.version' slug=series.slug version=series.version}}</a>
+                            </td>
+                        </tr>
+			            <tr>
+			                <td class="col-md-2">Provider</td>
+			                <td class="col-md-10">
+			                	<a class="close-modal" href="{{pathFor 'explorer.provider' provider=provider.slug}}">{{ provider.long_name }}</a>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Dataset</td>
+			                <td class="col-md-10">
+			                	<a class="close-modal" href="{{pathFor 'explorer.provider.dataset' provider=provider.slug dataset=dataset.slug}}">{{ dataset.dataset_code }} - {{ dataset.name }}</a>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Name</td>
+			                <td class="col-md-10">{{ series.name }}</td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Key</td>
+			                <td class="col-md-10">{{ series.key }}</td>
+			            </tr>
+                        {{!--
+                        <tr>
+                            <td class="col-md-2">Slug</td>
+                            <td class="col-md-10">{{ series.slug }}</td>
+                        </tr>
+                        --}}
+			            <tr>
+			                <td class="col-md-2">Updated</td>
+			                <td class="col-md-10">{{moment series.last_update_widu 'LLL'}}</td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Web Site</td>
+			                <td class="col-md-10">
+			                    {{ website provider dataset }}
+			                </td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Periods</td>
+			                <td class="col-md-10">
+			                	{{period_text series.values}}
+			                 </td>
+			            </tr>
+			            <tr>
+			                <td class="col-md-2">Frequency</td>
+			                <td class="col-md-10">{{frequency_name series.frequency}}</td>
+			            </tr>
+					</tbody>
+				</table>
+
+			</div><!-- tabpanel tab-modal-identity -->
+
+			<div role="tabpanel" class="tab-pane fade" id="tab-modal-dim">
+				<p>Dimensions/Attributes</p>
+			</div><!-- tabpanel tab-modal-dim -->
+
+			<div role="tabpanel" class="tab-pane fade" id="tab-modal-val">
+			    <table id="seriesDatas" class="table table-hover table-bordered table-condensed table-striped">
+				    <thead>
+		              	<th class="col-xs-2">Period</th>
+		              	<th class="col-xs-2 text-right">{{ moment series.last_update_ds 'YYYY-MM-DD' }}</th>
+		              	<th class="col-xs-2">&nbsp;</th>
+					</thead>
+					<tbody>
+		              	{{#each value in series_values_reverse series.values}}
+		                <tr>
+							<td class="col-xs-2">{{ value.period }}</td>
+		                    <td class="col-xs-2 text-right">{{ value.value }}</td>
+							<td class="col-xs-2">{{ attribute_short value dataset }}</td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</div><!-- tabpanel tab-modal-val -->
+
+			<div role="tabpanel" class="tab-pane fade" id="tab-modal-rev" data-spy="scroll" data-target="#seriesRevisions">
+				{{#unless revisions}}
+					<p class="text-warning">No revisions.</p>
+				{{else}}
+				    <table id="seriesRevisions" class="table table-hover table-condensed table-striped table-bordered">
+				    	<thead>
+				    		<th class="col-xs-2">
+				    			<small>Period</small>
+				    		</th>
+			    			<th class="col-xs-1 text-right">
+			    				<small>{{ moment series.last_update_ds 'YYYY-MM-DD' }}</small>
+			    			</th>
+				    		{{#each rev in revisions }}
+			    			<th class="col-xs-1 text-right">
+			    				<small>
+	                            	<a href="{{ s.url }}">
+				    				{{ moment rev.last_update_ds 'YYYY-MM-DD' }}
+				    				</a>
+			    				</small>
+			    			</th>
+				    		{{/each}}
+				    	</thead>
+				    	<tbody>
+				    		{{#each value in series_values_reverse series.values}}
+				    		<tr>
+				    			<td>
+				    				<span class="revision period">{{ value.period }}</span>
+				    			</td>
+				    			<td class="text-right">
+				    				<small><span class="revision current_value">{{value.value}}</span> {{ attribute_short value dataset }}</small>
+				    			</td>
+				    			{{#each rev in revisions }}
+				    			{{loop_count_incr}}
+				    			<td class="text-right">
+				    				{{#if is_rev (rev.values) }}
+				    					<small><span class="revision value">{{rev_value (rev.values)}}</span> {{ attribute_short value dataset }}</small>
+				    				{{ else }}
+				    				<span class="revision value">&nbsp;</span>
+				    				{{/if}}
+				    			</td>
+				    			{{/each}}
+				    		</tr>
+				    		{{/each}}
+				    	</tbody>
+					</table>
+				{{/unless}}
+
+			</div><!-- tabpanel tab-modal-rev -->
+
+			<div role="tabpanel" class="tab-pane fade" id="tab-modal-graph">
+				{{> highchartsHelper chartId="series-unit" chartWidth="{{size_with}}" charHeight="100%" chartObject=seriesChart}}
+			</div><!-- tabpanel tab-modal-graph -->
+
+			<div role="tabpanel" class="tab-pane fade" id="tab-modal-tags">
+				{{#if series.tags }}
+			    <table id="seriesTags" class="table table-striped table-condensed">
+			        <tbody>
+			            <tr>
+			                <td class="col-md-2">Tags</td>
+			                <td class="col-md-10">
+			                	<div>
+			                	{{#each tag in series.tags }}
+			                		<span class="label label-default">{{tag}}</span>
+			                	{{/each}}
+			                	</div>
+			                </td>
+			            </tr>
+			        </tbody>
+				</table>
+				{{else}}
+				<div class="text-warning">No tags</div>
+				{{/if}}
+			</div><!-- tabpanel tab-modal-tags -->
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-modal-dataset">
+                {{!--
+                {% include "dataset-shared-identity.html" with context %}
+
+                {% include "dataset-shared-dims-attrs.html" with context %}
+
+                {% include "dataset-shared-tags.html" with context %}
+                --}}
+            </div><!-- tabpanel tab-modal-dataset -->
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-modal-api">
+                <table class="table">
+                    <tr>
+                        <td class="col-xs-1">
+                            <h5>SDMX</h5>
+                        </td>
+                        <td>
+                            <pre>{{! config.BASE_URL_API_SDMX}}/{{series.provider_name}}/data/{{dataset.dataset_code}}/{{dimension_filter}}</pre>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-xs-1">
+                            <h5>JSON</h5>
+                        </td>
+                        <td>
+                            <pre>{{! config.BASE_URL_API_JSON}}/series/{{series.slug}}</pre>
+                        </td>
+                    </tr>
+                </table>
+            </div><!-- tabpanel tab-modal-api -->
+
+            <div role="tabpanel" class="tab-pane fade" id="tab-modal-debug">
+
+                <a id="debug" class="btn btn-default btn-sm" href="#"><i class="fa fa-cog"></i> Click for load</a>
+
+                <div class="debug" style="display: none">
+                    <h2>Series:</h2>
+                    <pre id="debug_object_series"></pre>
+
+                    <h2>Revisions:</h2>
+                    <pre>{{! revisions|pprint }}</pre>
+
+                    <h2>Dataset:</h2>
+                    <pre id="debug_object_dataset"></pre>
+
+                    <h2>Provider:</h2>
+                    <pre id="debug_object_provider"></pre>
+
+                </div>
+            </div><!-- tabpanel tab-modal-debug -->
+
+		</div><!-- tab-content -->
+	</div><!-- panel -->
+
+	{{else}}
+		{{> spinner}}
+	{{/if}}
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div><!-- modal -->
+
+
+</template>
+
+<template name="series_unit_chart">
+	{{#if Template.subscriptionsReady}}
+		{{> highchartsHelper chartId="series-unit" chartWidth="{{size_with}}" charHeight="100%" chartObject=seriesChart}}
+  	{{else}}
+    	{{> spinner}}
+  	{{/if}}
+</template>
+
+<template name="series_unit_chart_modal">
+    <div class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+				{{> series_unit_chart }}
+                {{!--
+                <div class="modal-header">
+                    <h4 class="modal-title">Series</h4>
+                </div>
+
+                <div class="modal-body">
+                    {{> series_unit_chart }}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+                --}}
+
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<template name="field_search">
+
+	<div class="form-group">
+	  	<label class="control-label" for="search">Search:</label>
+
+		<div class="input-group">
+		    <input id="search" name="search" type="text" class="form-control input-sm" value="{{search_value}}" placeholder="Search...">
+
+		    <span class="input-group-btn">
+		        <button id="search_btn_search" class="btn btn-default btn-sm" type="submit">
+		            <span class="fa fa-search"></span>
+		        </button>
+	        </span>
+			<span class="input-group-btn">
+		        <button id="search_btn_reset" class="btn btn-default btn-sm" type="reset" title="Reset search">
+		            <span class="fa fa-eraser"></span>
+		        </button>
+	        </span>
+			<span class="input-group-btn">
+		        <button id="search_btn_help" class="btn btn-default btn-sm" type="button" title="Help Search" role="button" data-toggle="popover" data-trigger="focus">
+		            <span class="fa fa-question-circle"></span>
+		        </button>
+	        </span>
+
+		</div>
+	</div>
+</template>
+
+<template name="field_search_help">
+    <small>
+	    <p>
+	    Entering text separated by spaces will search for each word individually in order.<br/>
+	    Example: <strong>Exchange Rates</strong><br/>
+	    Will return results that contain the words <strong>Exchange</strong> OR <strong>Rates</strong><br/>
+	    <br/>
+	    To search for a phrase, enclose it in quotes<br/>
+	    Example: <strong>"Exchange Rates"</strong><br/>
+	    Will return results that contain the phrase <strong>Exchange Rates</strong><br/>
+	    <br/>
+	    All searches are case-insensitive.
+	    </p>
+    </small>
+</template>
+
+<template name="cart_series_buttons">
+  <div class="btn-group btn-group-xs" role="group">
+    {{button_select}}
+    <a title="View series" data-title="View series" type="button" class="btn btn-default series-show" href="javascript:void(0)"><i class="fa fa-eye"></i></a>
+    <button title="Remove from cart" type="button" class="btn btn-default series-remove-cart" href="javascript:void(0)"><i class="fa fa-trash"></i></button>
+  </div>
+</template>
+
+<template name="cart_series_line">
+	<div class="list-group-item">
+	    <div class="row">
+	      <div class="col-sm-3">
+	        <p class="list-group-item-heading">{{> cart_series_buttons}}</p>
+	        <p class="list-group-item-text">latest: {{last_update_ds}}</p>
+	        <p class="list-group-item-text">{{frequency_name frequency}}</p>
+	        <p class="list-group-item-text">version: {{version}}</p>
+	        {{!--
+	        <p class="list-group-item-text">
+    			<input type="checkbox" class="switch" checked="{{ isChecked }}">
+  			</p>
+  			--}}
+	      </div>
+	      <div class="col-sm-9">
+	        <h4 class="list-group-item-heading">{{key}} - <small>{{name}}</small></h4>
+	        <h5 class="list-group-item-text">{{provider_name}} - {{dataset_code}}</h5>
+	        <a href="{{pathFor 'series.slug' slug=slug}}" class="list-group-item-text">Permalink: {{pathFor 'series.slug' slug=slug}}</a>
+	      </div>
+	    </div>
+    </div>
+</template>
+
+<template name="viewCart">
+
+	<div class="panel panel-default modal-detail">
+
+	    <div id="toolbar">
+	        <button id="cart-checkAll" class="btn btn-primary btn-sm">check All</button>
+	        <button id="cart-uncheckAll" class="btn btn-warning btn-sm">uncheck All</button>
+	        <button id="cart-deleteAll" class="btn btn-danger btn-sm">Delete All</button>
+	        <button id="cart-export-csv" class="btn btn-success btn-sm {{#if selectionDisable}}disabled{{/if}}">Export CSV</button>
+	    </div>
+
+  		<div class="list-group">
+	  		{{#each series_list}}
+	  			{{> cart_series_line}}
+	  		{{/each}}
+  		</div>
+
+	</div>
+
+</template>
+
+<template name="viewCartModal">
+    <div class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Series Cart</h4>
+                </div>
+
+                <div class="modal-body">
+                	{{> viewCart }}
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>

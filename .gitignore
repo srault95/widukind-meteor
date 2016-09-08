@@ -1,0 +1,11 @@
+/archives
+.archives
+/internal
+*.log
+.coverage
+htmlcov
+docs/_build
+dist
+build
+TODO.rst
+node_modules

@@ -1,0 +1,145 @@
+<template name="card">
+  <div class="container-fluid">
+    <div class="row">
+        <div class="panel panel-default provider">
+  			<div class="panel-body">
+               		<div class="row">
+                         <div class="col-md-12">
+                         		<div class="row">
+                         			<div class="col-md-10">
+                       			    {{#if dataset}}
+                                    <a title="View datas" class="text-primary" href="{{pathFor 'explorer.provider.dataset' provider=provider.slug dataset=dataset}}">
+      	                       				<h3 class="provider-name">
+      	                       				{{ provider.name }}
+      	                       				</h3>
+      	                       			</a>
+                       			    {{else}}
+	                       			      <a title="View datas" class="text-primary" href="{{pathFor 'explorer.provider' provider=provider.slug}}">
+      	                       				<h3 class="provider-name">
+      	                       				{{ provider.name }}
+      	                       				</h3>
+      	                       			</a>
+                                {{/if}}
+
+                         				<h5>{{ provider.long_name }}</h5>
+                         				<h5><a class="text-primary" target="_blank" href="{{ provider.website }}">{{ provider.website }}</a>{{#if provider.terms_of_use }} - <a target="_blank" class="text-primary" href="{{ provider.terms_of_use }}">Terms of Use</a>{{/if}}</h5>
+                         			</div>
+                         			<div class="col-md-2">
+                         				<h3>
+                         				<img src="{{ logo }}" alt="" class="center-block img-thumbnail img-responsive profile-img" />
+                         				</h3>
+                         			</div>
+                         		</div>
+                         </div><!--/col-->
+                     </div>
+                </div><!--/panel-body-->
+            </div><!--/panel-->
+    </div>
+  </div>
+</template>
+
+
+<template name="home">
+<div id="site_content" class="col-md-12 home">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-12">
+
+              <div class="panel panel-default noborder nomargin-bottom">
+                  <div class="panel-body nopadding-bottom">
+
+                      <h3 class="text-center" style="margin-top: 0;">
+                          International Economics Database
+                      </h3>
+
+                      <p class="text-center">A database of international macroeconomic data</p>
+
+                      <div class="partner-logos text-center">
+                          <h3 style="margin-top: 0;"><small>Partners</small></h3>
+                          <p>
+                              <a href="http://www.strategie.gouv.fr" target="_blank">
+                                  <img class="img-rounded" src="/imgs/logos/logo-fs-new-40.png" alt="France Stratégie">
+                              </a>
+
+                              <span> &nbsp; </span>
+
+                              <a href="http://www.cepremap.org" target="_blank">
+                                  <img class="img-rounded" src="/imgs/logos/logo-cepremap-40-new.png" alt="CEPREMAP">
+                              </a>
+                          </p>
+
+                      </div>
+
+                      <p>&nbsp;</p>
+
+                      <div class="home-intro text-justify">
+                          <p>The purpose of the Widukind project is to provide a unique website accessible for all users, allowing them to free download public economic data as released by national producers (national institutes of statistics, central banks) as well as international ones (IMF, World Bank, OECD, Eurostat, ECB&hellip;).</p>
+                          <p>These data will be updated regularly and former updates are archived so as to build overtime a <em>real time database</em>. Moreover, data can be downloaded directly by a broad spectrum of econometric and statistical analysis softwares using the utilities provided by the project (R, Matlab, Stata, EViews, Excel, Python, Julia&hellip;).</p>
+                          <p>This website is still under development and may contains bugs. Moreover, datasets are currently only updated occasionally and data changed by their provider may be reflected here with a delay. We plan to eliminate this delay in the final version.</p>
+                      </div>
+
+                  </div>
+              </div>
+
+          </div>
+      </div>
+  	<div class="row">
+      {{#if Template.subscriptionsReady}}
+          <div class="panel panel-default noborder">
+              <div class="panel-body nopadding-top">
+
+          		<div class="col-md-6">
+          			{{#if providers.insee }}
+          			{{>card provider=providers.insee dataset="insee-ipch-2015-fr-coicop"}}
+          			{{/if}}
+
+          			{{#if providers.imf }}
+          			{{>card provider=providers.imf dataset="imf-weo"}}
+          			{{/if}}
+
+          			{{#if providers.esri }}
+          			{{>card provider=providers.esri}}
+          			{{/if}}
+
+          			{{#if providers.ecb }}
+          			{{>card provider=providers.ecb dataset="ecb-exr"}}
+          			{{/if}}
+
+          			{{#if providers.bea }}
+          			{{>card provider=providers.bea}}
+          			{{/if}}
+
+          		</div>
+          		<div class="col-md-6">
+
+          			{{#if providers.eurostat }}
+          			{{>card provider=providers.eurostat dataset="eurostat-namq-10-gdp"}}
+          			{{/if}}
+
+          			{{#if providers.bis }}
+          			{{>card provider=providers.bis dataset="bis-pp-ls"}}
+          			{{/if}}
+
+          			{{#if providers.oecd }}
+          			{{>card provider=providers.oecd dataset="oecd-eo"}}
+          			{{/if}}
+
+          			{{#if providers.worldbank }}
+          			{{>card provider=providers.worldbank dataset="worldbank-gem"}}
+          			{{/if}}
+
+          			{{#if providers.fed }}
+          			{{>card provider=providers.fed dataset="fed-g19-terms"}}
+          			{{/if}}
+
+          		</div>
+
+              </div>
+          </div>
+      {{else}}
+        {{> spinner}}
+      {{/if}}
+  	</div>
+  </div>
+</div>
+</template>

@@ -1,0 +1,11 @@
+<template name="masterLayout">
+  <div id="content" class="container-fluid">
+      {{> Template.dynamic template=nav}}
+    <div class="row">
+      {{#momentum plugin='flow-router'}}
+      {{> Template.dynamic template=main}}
+      {{/momentum}}
+    </div>
+  </div>
+  {{> Template.dynamic template=footer}}
+</template>

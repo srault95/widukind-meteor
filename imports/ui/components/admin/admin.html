@@ -1,0 +1,75 @@
+<template name="stats_run">
+  {{#if Template.subscriptionsReady}}
+    <div class="col-md-12">
+        <div id="site-left" class="col-md-3">
+          {{> stats_run_site_left }}
+        </div>
+        <div id="site_content" class="col-md-9">
+          	<div class="panel panel-default">
+          		<div class="panel-heading">
+        			<div class="row">
+          				<div class="col-xs-2">
+        					{{> stats_run_limit }}
+        				</div>
+        			</div>
+        		</div>
+          		{{> reactiveTable collection=datas settings=settings}}
+          	</div>
+        </div>
+    </div>
+  {{else}}
+    {{> spinner}}
+  {{/if}}
+</template>
+
+<template name="stats_run_site_left">
+    {{> admin_field_created }}
+    {{> admin_field_provider}}
+    {{> admin_field_dataset}}
+</template>
+
+<template name="admin_field_created">
+	<div class="form-group">
+		<label class="control-label" for="created">Date:</label>
+		<input type="text" id="created" name="created" class="form-control input-sm"/>
+	</div>
+</template>
+
+<template name="admin_field_provider">
+    {{#if Template.subscriptionsReady}}
+		<div class="form-group">
+		  <label class="control-label" for="provider">Provider:</label>
+		  <select name="provider" class="form-control field-select2">
+		    {{#each provider_options}}
+		      <option value="{{value}}" {{attrs}}>{{label}}</option>
+		    {{/each}}
+		  </select>
+		</div>
+    {{/if}}
+</template>
+
+<template name="admin_field_dataset">
+	{{#if ready}}
+	    <div class="form-group">
+	      <label class="control-label" for="dataset">Dataset:</label>
+	      <select name="dataset" class="form-control field-select2">
+	        {{#each dataset_options}}
+	          <option value="{{value}}" {{attrs}}>{{label}}</option>
+	        {{/each}}
+	      </select>
+	    </div>
+	{{/if}}
+</template>
+
+<template name="stats_run_limit">
+	<form class="form-inline">
+  		<div class="form-group">
+    		<label class="sr-only" for="stats_run_limit">Limit</label>
+		    <select id="stats_run_limit" class="form-control">
+		    	{{#each options}}
+		    		<option value="{{value}}" {{attrs}}>{{label}}</option>
+		    	{{/each}}
+		    </select>
+		</div>
+	</form>
+</template>
